@@ -1,9 +1,9 @@
 package com.hiraii.model;
 
 import com.hiraii.util.gerarISBN;
-import com.hiraii.util.exception.LivroException;
+import com.hiraii.exception.LivroException;
 
-public class livro {
+public class Livro {
 
     static int contador = 1;
 
@@ -13,12 +13,12 @@ public class livro {
     private int ano;
     private String isbn = gerarISBN.gerar();
 
-    public livro() {
+    public Livro() {
         this.id = ++contador;
         this.isbn = gerarISBN.gerar();
     }
 
-    public livro(String titulo, String autor, int ano, String isbn) {
+    public Livro(String titulo, String autor, int ano, String isbn) {
         this.id = ++contador;
         this.titulo = titulo;
         this.autor = autor;
