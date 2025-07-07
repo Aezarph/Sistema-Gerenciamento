@@ -1,109 +1,78 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-
-<html>
-
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
-    <title>MAPA - Fabrica de Software</title>
+    <meta charset="UTF-8">
+    <title>MAPA - Fábrica de Software</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Fonte Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        .container-form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap:.5rem;
-            border:1px solid black;
-            padding: 1rem;
-            border-radius: 8px;
-            max-width: 400px;
-            margin: 40px auto;
-
-            form {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                width: 100%;
-                gap:1rem;
-
-                div {
-                    width: 100%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: start;
-                    gap: 1rem;
-
-                    label {
-                        width: 20%;
-                        font-size: 1.5rem;
-                    }
-
-                    input {
-                        width: 80%;
-                        border-radius: 10px;
-                        padding: .5rem;
-                        font-size: 1rem;
-                    }
-                }
-            }
-            button {
-                background-color: darkturquoise;
-                padding: .5rem;
-                border: none;
-                border-radius: 20px;
-                color: #fff;
-                cursor: pointer;
-                font-size: 1.5rem;
-                width: 100%;
-            }
-        }
-        .lista {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-            gap: .5rem;
-            padding: .3rem;
-            border: 1px solid black;
-        }
-        .delete-form {
-            margin: 0;
-
-            button {
-                cursor: pointer;
-                padding: .5rem;
-                border: none;
-                background-color: red;
-                color: #fff;
-            }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #e2e8f0;
         }
     </style>
 </head>
+<body class="flex flex-col items-center min-h-screen p-4">
 
-<body>
+<div class="w-full max-w-2xl mx-auto bg-gray-900 shadow-2xl rounded-xl p-6 md:p-8 mt-10 border border-gray-800">
 
-<div class="container-form">
-    <h2>Cadastrar Livros</h2>
-    <form action="livros" method="post">
-        <div>
-            <label for="titulo">Titulo: </label>
-            <input type="text" name="titulo" required/>
-        </div>
-        <div>
-            <label for="autor">Autor: </label>
-            <input type="text" name="autor" required/>
-        </div>
-        <div>
-            <label for="ano">Ano: </label>
-            <input type="number" name="ano" required/>
-        </div>
-        <button type="submit">Cadastrar</button>
-    </form>
-</div>
+    <% if (request.getAttribute("mensagemErro") != null) { %>
+    <div id="popup-erro"
+         class="fixed top-6 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-slide-down">
+        <%= request.getAttribute("mensagemErro") %>
+    </div>
+    <script>
+        setTimeout(() => {
+            const popup = document.getElementById("popup-erro");
+            if (popup) popup.style.display = "none";
+        }, 3000); // Esconde após 3 segundos
+    </script>
+    <% } %>
 
-<div>
-    <%= request.getAttribute("htmlLivros")%>
+    <!-- Formulário -->
+    <section class="bg-gray-800 p-6 rounded-lg shadow-xl mb-8">
+        <h2 class="text-2xl font-bold text-white mb-6 text-center">Cadastrar Livros</h2>
+        <form action="livros" method="post" class="space-y-4">
+            <div>
+                <label for="titulo" class="block text-sm font-medium text-gray-300 mb-1">Título:</label>
+                <input type="text" id="titulo" name="titulo" required
+                       class="block w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-white">
+            </div>
+            <div>
+                <label for="autor" class="block text-sm font-medium text-gray-300 mb-1">Autor:</label>
+                <input type="text" id="autor" name="autor" required
+                       class="block w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-white">
+            </div>
+            <div>
+                <label for="ano" class="block text-sm font-medium text-gray-300 mb-1">Ano:</label>
+                <input type="number" id="ano" name="ano" required
+                       class="block w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-white">
+            </div>
+            <div class="flex justify-center mt-6">
+                <button type="submit"
+                        class="w-full px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-semibold rounded-lg shadow-lg hover:from-emerald-700 hover:to-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition duration-300 ease-in-out transform hover:scale-105">
+                    Cadastrar
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <!-- Lista de Livros -->
+    <section class="mt-8">
+        <h2 class="text-2xl font-bold text-white mb-6">Livros Cadastrados:</h2>
+        <div class="bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-700 divide-y divide-gray-700">
+            <%= request.getAttribute("htmlLivros") %>
+        </div>
+    </section>
 </div>
 
 </body>
-
 </html>

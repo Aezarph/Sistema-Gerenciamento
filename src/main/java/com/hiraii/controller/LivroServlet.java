@@ -36,14 +36,15 @@ public class LivroServlet extends HttpServlet {
         String htmlLivros = GerarHtmlLivro.gerar(request, livros);
         request.setAttribute("htmlLivros", htmlLivros);
         request.getRequestDispatcher("/view/index.jsp").forward(request, response);
-
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         String action = request.getParameter("action");
 
+        // Excluir livro
         if ("delete".equals(action)) {
             String id = request.getParameter("id");
             if (id != null && !id.isEmpty()) {
@@ -55,13 +56,31 @@ public class LivroServlet extends HttpServlet {
         }
 
         try {
+            String titulo = request.getParameter("titulo").toUpperCase();
+            String autor = request.getParameter("autor").toUpperCase();
+            String anoStr = request.getParameter("ano");
+
+            // Verificação básica de ano
+            int ano = Integer.parseInt(anoStr);
+
+            // Verificar se já existe livro com mesmo título e autor
+            if (livroDuplicado(titulo, autor)) {
+                request.setAttribute("mensagemErro", "Esse livro já foi cadastrado.");
+                request.setAttribute("htmlLivros", GerarHtmlLivro.gerar(request, livros));
+                request.getRequestDispatcher("/view/index.jsp").forward(request, response);
+                return;
+            }
+
+            // Criar e validar novo livro
             Livro livro = new Livro();
-            livro.setTitulo(request.getParameter("titulo").toUpperCase());
-            livro.setAutor(request.getParameter("autor").toUpperCase());
-            livro.setAno(Integer.parseInt(request.getParameter("ano")));
+            livro.setTitulo(titulo);
+            livro.setAutor(autor);
+            livro.setAno(ano);
             livro.validar();
+
             livros.add(livro);
             response.sendRedirect(request.getContextPath() + "/livros");
+
         } catch (NumberFormatException e) {
             request.setAttribute("mensagemErro", "Ano deve ser um número.");
             request.setAttribute("htmlLivros", GerarHtmlLivro.gerar(request, livros));
@@ -71,9 +90,16 @@ public class LivroServlet extends HttpServlet {
             request.setAttribute("htmlLivros", GerarHtmlLivro.gerar(request, livros));
             request.getRequestDispatcher("/view/index.jsp").forward(request, response);
         }
-
     }
 
+    // verificar duplicidade de título e autor
+    private boolean livroDuplicado(String titulo, String autor) {
+        for (Livro l : livros) {
+            if (l.getTitulo().equalsIgnoreCase(titulo.trim()) &&
+                    l.getAutor().equalsIgnoreCase(autor.trim())) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
-
-
